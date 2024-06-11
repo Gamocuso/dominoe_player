@@ -14,61 +14,22 @@ class GuiPLayer(Player):
 
     def play(self, board_extremes, play_hist):
 
-        def minor_value_extreme(poss_tiles, extremes):
+        def find_double(tiles, number):
 
-            left = extremes[0]
-            right = extremes[1]
-            minor_left = [0, None]
-            minor_right = [1, None]
+            tiles = organize_tiles(tiles)
 
-            for i in poss_tiles:
-                if left in i:
-                    if minor_left[1] == None:
-                        minor_left = [0,i]
-                        pass
-                    if i[0] == left:
-                        if minor_left[1][0] == left:
-                            if minor_left[1][1] > i[1]:
-                                minor_left = [0, i]
-                        else:
-                            if minor_left[1][0] > i[1]:
-                                minor_left = [0, i]
-                    elif i[1] == left:
-                        if minor_left[1][0] == left:
-                            if minor_left[1][1] > i[0]:
-                                minor_left = [0, i]
-                        else:
-                            if minor_left[1][0] > i[0]:
-                                minor_left = [0, i]
-                
-                if right in i:
-                    if minor_right[1] == None:
-                        minor_right = [1, i]
-                        pass
-                    if i[0] == right:
-                        if minor_right[1][0] == right:
-                            if minor_right[1][1] > i[1]:
-                                minor_right = [1, i]
-                        else:
-                            if minor_right[1][0] > i[1]:
-                                minor_right = [1, i]
-                    elif i[1] == right:
-                        if minor_right[1][0] == right:
-                            if minor_right[1][1] > i[0]:
-                                minor_right = [1, i]
-                        else:
-                            if minor_right[1][0] > i[0]:
-                                minor_right = [1, i]
+            double = [0,(-1,-1)]
 
-            if minor_right[1] == None:
-                return minor_left
-            elif minor_left[1] == None:
-                return minor_right
+            for tile in tiles:
+                if tile[1][1] == tile[1][0] and t_sum(double[1]) < t_sum(tile[1]):
+                    double = tile
+                    if tile[1][0] == number:
+                        return double
 
-            if sum(minor_left[1]) > sum(minor_right[1]):
-                return minor_left
+            if double[1][0] >= 0:
+                return double
             else:
-                return minor_right
+                return None
             
         def nones(p, play_hist):
 
@@ -181,16 +142,13 @@ class GuiPLayer(Player):
                 if contagem > better_quantity:
                     better_number = x
                     better_quantity = contagem
-                return better_number, better_quantity
+                elif contagem == better_quantity and x > better_number:
+                    better_number = x
+            return better_number, better_quantity
         
         def best_play (number, hand, extremes):
 
             if len(extremes) > 1 and len(hand) > 1:
-
-                #minor = minor_value_extreme(hand, extremes)
-
-                #if minor[1] != None:
-                    #return minor[0], minor[1]
 
                 if len(play_hist) > 2:
 
@@ -214,9 +172,14 @@ class GuiPLayer(Player):
 
                     if len(plays) > 0:
                         plays = organize_tiles(plays)
-                        return plays[-1][0], plays[-1][1]
+                        double_play = find_double(plays, number)
+                        play = plays[-1] if not double_play else double_play
+                        return play[0], play[1]
 
                 hand = organize_tiles(hand)
+                double_hand = find_double(hand, number)
+                if double_hand:
+                    return double_hand[0], double_hand[1]
                 left = extremes[0]
                 right = extremes[1]
 
@@ -252,6 +215,7 @@ class GuiPLayer(Player):
         if len(playable_tiles) == 1:
             return 1, playable_tiles[0]
         number_ , quantity = count_hand()
+        print(number_)
         
         best_play = best_play(number_, playable_tiles, board_extremes)
 
