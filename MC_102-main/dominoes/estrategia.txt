@@ -1,0 +1,29 @@
+Nossa estratégia se baseia em alguns princípios e informações e ocorre de forma ordenada com base nas prioridades de cada princípio:
+
+-> fizemos algumas funções que analisam o estado da partida e consideram a mão do player:
+
+    - há a contagem de peças na mão, dando prioridade à peça mais frequente e de maior valor
+
+    - achar as peças "double" da mão 
+
+    - descobrir quais são as peças faltantes dos jogadores inimigos e do jogador amigo
+
+    - encontrar quais são as peças jogáveis a partir dos extremos
+
+Diante dessas informações em mãos, desenvolve-se o encadeamentos de possíveis jogadas estratégicas em sequência:
+
+    1º: Caso haja mais de duas jogadas no histórico, esse é varrido pela função "nones" que retorna as recorrências de jogadas nulas por determinado jogador. A partir dela, achamos quais são as peças que o nosso companheiro não possui e quais peças o jogador posterior (inimigo) não tem.
+
+        - caso haja peças em que o nosso amigo não possui, chamamos a função "play_mode" com o primeiro parâmetro "TEAM", fazendo com que essa retorne as possíveis jogadas que favoreceriam o nosso jogador companheiro (ou que pelo menos não o faria pular)
+
+        - analogamente ao caso anterior, caso haja peças que o nosso inimigo posterior não possua, chamamos a função "play_mode" com o primeiro parâmetro "ENEMIE", fazendo com que essa retorne as possíveis jogadas que prejudicaria nosso inimigo
+
+        - depois de achar os nones de cada jogador, primeiro fazemos a análise se há uma boa jogada defensiva (priorizamos o parceiro) e depois analisamos se é possível fazer uma jogada defensiva (inimigo), sempre priorizando as peças duplas e a ordem descrita
+    
+        - obs.: fizemos a função organize_tiles para dar um "sort" nas peças possíveis
+
+        2º se não houver jogadas defensivas ou ofensivas, analisamos se há uma peça jogável que seja dupla, se houver, a jogamos
+
+        3º caso não haja uma peça dupla possível, achamos a maior peça jogável que contenha o nosso número de prioridade e jogamos ela
+
+        4º caso todas essas últimas estratégias falhem, jogamos a maior peça jogável na mão 
